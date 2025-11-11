@@ -32,3 +32,10 @@ CREATE TABLE otp_tokens (
     updated_at TIMESTAMP
 );
 CREATE INDEX idx_otp ON otp_tokens(email, created_at);
+
+CREATE TABLE reset_tokens (
+    email VARCHAR(100) NOT NULL UNIQUE,
+    reset_token TEXT UNIQUE,
+    expires_at TIMESTAMP DEFAULT NOW()
+);
+CREATE INDEX idx_rt ON reset_tokens(email);

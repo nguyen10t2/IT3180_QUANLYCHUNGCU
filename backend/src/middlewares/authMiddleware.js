@@ -70,7 +70,7 @@ export const authorize = (required_role) => {
     };
 };
 
-export const verifyRT = async (req, res, next) => {
+export const verifyRefreshToken = async (req, res, next) => {
     try {
         const refresh_token = req.cookies?.refresh_token;
 

@@ -1,7 +1,18 @@
 import pool from '../libs/db.js';
 
 export const User = {
-    async isExists({email}) {
+    async updateUser({ email, new_password }) {
+        const res = await pool.query(
+            `UPDATE users
+            SET password_hash = $1
+            WHERE email = $2
+            RETURNING user_id`,
+            [new_password, email]
+        );
+        return res.rows[0];
+    },
+
+    async isExists({ email }) {
         const res = await pool.query(
             `SELECT EXISTS(
                 SELECT 1 FROM users
@@ -12,7 +23,7 @@ export const User = {
         return res.rows[0].exists;
     },
 
-    async findOne({email}) {
+    async findOne({ email }) {
         const res = await pool.query(
             `SELECT * FROM users
             WHERE email = $1`,
@@ -21,7 +32,7 @@ export const User = {
         return res.rows[0];
     },
 
-    async findUserById({user_id}) {
+    async findUserById({ user_id }) {
         const res = await pool.query(
             `SELECT email, fullname, role, status, created_at, updated_at FROM users
             WHERE user_id = $1`,
@@ -30,7 +41,7 @@ export const User = {
         return res.rows[0];
     },
 
-    async create({email, password_hash, fullname}) {
+    async create({ email, password_hash, fullname }) {
         const res = await pool.query(
             `INSERT INTO users (email, password_hash, fullname) 
             VALUES ($1, $2, $3)
@@ -39,8 +50,8 @@ export const User = {
         );
         return res.rows[0];
     },
-    
-    async verifyUser({email}) {
+
+    async verifyUser({ email }) {
         const res = await pool.query(
             `UPDATE users SET verified = TRUE
             WHERE email = $1

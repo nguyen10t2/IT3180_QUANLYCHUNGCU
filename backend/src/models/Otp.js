@@ -1,10 +1,6 @@
 import pool from '../libs/db.js';
 
 export const Otp = {
-    generateOtp() {
-        return Array.from({ length: 6 }, () => Math.floor(Math.random() * 10)).join('');
-    },
-
     async create({email, otp, expires_at}) {
         const res = await pool.query(
             `INSERT INTO otp_tokens (email, otp, expires_at, is_used, created_at, updated_at)
