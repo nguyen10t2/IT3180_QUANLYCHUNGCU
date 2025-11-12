@@ -34,7 +34,7 @@ export const User = {
 
     async findUserById({ user_id }) {
         const res = await pool.query(
-            `SELECT email, fullname, role, status, created_at, updated_at FROM users
+            `SELECT user_id, email, fullname, role, status, created_at as create_at, updated_at FROM users
             WHERE user_id = $1`,
             [user_id]
         );

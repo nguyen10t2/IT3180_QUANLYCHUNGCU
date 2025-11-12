@@ -91,7 +91,7 @@ export function ForgotPasswordForm({
           {/* Right side image */}
           <div className="relative hidden bg-muted md:block">
             <img
-              src="/placeholder.svg"
+              src="/forgot-password.svg"
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />

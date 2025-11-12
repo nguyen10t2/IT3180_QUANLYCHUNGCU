@@ -102,14 +102,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: true });
       const { user, fetchMe } = get();
 
-      // Lấy role từ localStorage hoặc từ user object
-      const role = localStorage.getItem('userRole') || user?.role;
-
-      if (!role) {
-        throw new Error("Không tìm thấy role");
-      }
-
-      const accessToken = await authService.refreshTokenHandler(role);
+      const accessToken = await authService.refreshTokenHandler();
       get().setAccessToken(accessToken);
 
       // Nếu chưa có thông tin người dùng, lấy nó
@@ -119,7 +112,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (err) {
       console.error("Lỗi khi làm mới token:", err);
       get().clearState();
-      toast.error("Phiên đã hết hạn, vui lòng đăng nhập lại");
+      // Không toast khi refresh thất bại ở background
     } finally {
       set({ loading: false });
     }

@@ -36,13 +36,13 @@ export const authService = {
     return res.data;
   },
 
-  refreshTokenHandler: async (role: string) => {
+  refreshTokenHandler: async () => {
     const res = await api.post(
       "/api/auth/refresh",
-      { role: role },
+      {},
       { withCredentials: true }
     );
-    return res.data.token;
+    return res.data.access_token;
   },
 
   forgetPassword: async (email: string) => {

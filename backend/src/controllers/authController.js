@@ -148,9 +148,7 @@ export const refreshToken = async (req, res) => {
             { expiresIn: '15m' }
         );
 
-        res.json({ access_token });
-
-        return res.status(204);
+        return res.status(200).json({ access_token });
     } catch (error) {
         console.error('Lỗi khi gọi refresh token', error);
         return res.status(500).json({ message: 'Lỗi hệ thống' });

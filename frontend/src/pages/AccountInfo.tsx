@@ -9,8 +9,15 @@ interface AccountInfoProps {
 }
 
 export default function AccountInfo({ isOpen }: AccountInfoProps) {
-  const { user } = useAuthStore();
+  const { user, fetchMe, loading } = useAuthStore();
   const [userInfo, setUserInfo] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Nếu modal được mở nhưng chưa có user, fetch lại
+    if (isOpen && !user && !loading) {
+      fetchMe();
+    }
+  }, [isOpen, user, loading, fetchMe]);
 
   useEffect(() => {
     if (user) {
@@ -18,7 +25,22 @@ export default function AccountInfo({ isOpen }: AccountInfoProps) {
     }
   }, [user]);
 
-  if (!isOpen || !userInfo) return null;
+  if (!isOpen) return null;
+
+  // Hiển thị loading khi đang fetch user
+  if (!userInfo && loading) {
+    return (
+      <div className="ml-64 p-8 flex-1">
+        <div className="max-w-sm bg-card border border-border rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-center py-8">
+            <div className="text-muted-foreground">Đang tải thông tin...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userInfo) return null;
 
   const handleChangePassword = () => {
     // TODO: Implement change password logic

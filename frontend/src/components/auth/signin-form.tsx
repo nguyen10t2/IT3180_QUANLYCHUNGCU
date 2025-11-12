@@ -50,7 +50,7 @@ export function SigninForm({
                   <Input
                     type="text"
                     id="email"
-                    placeholder="kogu"
+                    placeholder="kogu@kogu.com"
                     {...register("email")}
                   />
                   {errors.email && (

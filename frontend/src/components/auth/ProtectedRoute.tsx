@@ -1,23 +1,42 @@
 import { Navigate, Outlet } from "react-router"
 import { useAuthStore } from "@/stores/useAuthStore"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 const ProtectedRoute = () => {
-  const { accessToken, user, loading, refreshTokenHandler, fetchMe } = useAuthStore()
+  const { accessToken, loading, refreshTokenHandler, fetchMe } = useAuthStore()
   const [starting, setstarting] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const hasInitialized = useRef(false)
 
   const init = async () => {
-    // Thử refresh token nếu chưa có accessToken
-    // Cookies sẽ tự động được gửi để verify refresh_token
-    if(!accessToken) {
-      await refreshTokenHandler()
-    }
+    try {
+      // Nếu chưa có accessToken, thử refresh
+      if (!accessToken) {
+        await refreshTokenHandler()
+      }
 
-    if(accessToken && !user) {
-      await fetchMe()
+      // Sau khi refresh, lấy lại state mới
+      const currentState = useAuthStore.getState()
+      const currentToken = currentState.accessToken
+      const currentUser = currentState.user
+      
+      if (currentToken) {
+        setIsAuthenticated(true)
+        
+        // Lấy thông tin user nếu chưa có
+        if (!currentUser) {
+          await fetchMe()
+        }
+      } else {
+        // Không có token sau khi refresh -> chưa đăng nhập
+        setIsAuthenticated(false)
+      }
+    } catch (error) {
+      console.error("Auth init error:", error)
+      setIsAuthenticated(false)
+    } finally {
+      setstarting(false)
     }
-    
-    setstarting(false)
   }
 
   useEffect(() => {
@@ -25,14 +44,21 @@ const ProtectedRoute = () => {
       setstarting(false)
       return
     }
+    
+    // Chỉ chạy init một lần, tránh double call từ StrictMode
+    if (hasInitialized.current) {
+      return
+    }
+    
+    hasInitialized.current = true
     init()
   }, [])
 
-  if(starting || loading) {
+  if (starting || loading) {
     return <div className="flex h-screen items-center justify-center">Đang tải trang...</div>
   }
 
-  if(!accessToken) {
+  if (!isAuthenticated && !accessToken) {
     return (
       <Navigate
         to="/signin"
