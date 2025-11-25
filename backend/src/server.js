@@ -13,7 +13,7 @@ const IP_ADDRESS = process.env.IP_ADDRESS || 'localhost';
 const PORT = process.env.PORT || 8080;
 
 app.use(cors({
-    origin: `http://${IP_ADDRESS}:5173`,
+    origin: `http://${IP_ADDRESS}:3000`,
     credentials: true,
 }));
 

@@ -1,12 +1,25 @@
+import { getResidents } from "../controllers/residentController";
+import { updateMe } from "../controllers/userController";
 import pool from "../libs/db";
 
 export const Resident = {
-    async create({fullname, date_of_birth, phone_number, gender, role, house_id, status}) {
+    async updateResident({resident_id, data}) {
+        const fields = [];
+        const values = [];
+        let index = 1;
+        for (const key in data) {
+            fields.push(`${key} = $${index}`);
+            values.push(data[key]);
+            index++;
+        }
+        values.push(resident_id);
+
         const res = await pool.query(
-            `INSERT INTO residents (fullname, date_of_birth, phone_number, gender, role, house_id, status) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            RETURNING resident_id, fullname, phone_number`,
-            [fullname, date_of_birth, phone_number, gender, role, house_id, status]
+            `UPDATE residents
+            SET ${fields.join(", ")}
+            WHERE resident_id = $${index}
+            RETURNING *`,
+            values
         );
         return res.rows[0];
     },
@@ -71,4 +84,23 @@ export const Resident = {
         );
         return res.rows[0];
     },
+
+    async getResidentByUserId({user_id}) {
+        const res = await pool.query(
+            `SELECT r.* FRIM residents r
+            INNER JOIN users u ON r.resident_id = u.resident_id
+            WHERE u.user_id = $1`,
+            [user_id]
+        );
+        return res?.rows[0];
+    },
+    async getResidentIdFromUserId({user_id}) {
+        const res = await pool.query(
+            `SELECT r.resident_id FRIM residents r
+            INNER JOIN users u ON r.resident_id = u.resident_id
+            WHERE u.user_id = $1`,
+            [user_id]
+        );
+        return res?.rows[0];
+    }
 };

@@ -1,52 +1,68 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "../ui/label";
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { signUpSchema } from "@/validation/authSchema";
-import type { SignUpFormValues } from "@/validation/authSchema";
+import { Label } from "@/components/ui/label";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signUpSchema } from "@/lib/validations/auth";
+import type { SignUpFormValues } from "@/lib/validations/auth";
+import Link from "next/link";
+import Image from "next/image";
 
-type SignupFormProps = {
+type SignUpFormProps = {
   onSubmit: (data: SignUpFormValues) => Promise<void>;
   isLoading?: boolean;
   className?: string;
 };
 
-export function SignupForm({
+export function SignUpForm({
   className,
   onSubmit,
   isLoading = false,
-}: SignupFormProps) {
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SignUpFormValues>({
+}: SignUpFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      role: 'resident',
-    }
+      role: "resident",
+    },
   });
 
   return (
     <div className={cn("flex flex-col gap-6", className)}>
       <Card className="overflow-hidden p-0 border-border">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-4 md:p-6 w-full" onSubmit={handleSubmit(onSubmit)}>
+          <form
+            className="p-4 md:p-6 w-full"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <div className="flex flex-col gap-4">
-              {/* header - logo */}
+              {/* Header - Logo */}
               <div className="flex flex-col items-center text-center gap-2">
-                <a href="/"
-                  className="mx-auto block w-fit text-center">
-                  <img
+                <Link href="/" className="mx-auto block w-fit text-center">
+                  <Image
                     src="/logo.svg"
                     alt="logo"
+                    width={64}
+                    height={64}
+                    priority
                   />
-                </a>
+                </Link>
                 <h1 className="text-2xl font-bold">Tạo tài khoản Kogu</h1>
               </div>
-              {/* họ và tên */}
-              <div className="grid grid-col gap-2">
+
+              {/* Fullname */}
+              <div className="grid grid-cols-1 gap-2">
                 <div className="space-y-2">
-                  <Label htmlFor="fullname" className="block text-sm">Họ và tên</Label>
+                  <Label htmlFor="fullname" className="block text-sm">
+                    Họ và tên
+                  </Label>
                   <Input
                     type="text"
                     id="fullname"
@@ -60,10 +76,13 @@ export function SignupForm({
                   )}
                 </div>
               </div>
-              {/* email */}
-              <div className="grid grid-col gap-2">
+
+              {/* Email */}
+              <div className="grid grid-cols-1 gap-2">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="block text-sm">Tài khoản email</Label>
+                  <Label htmlFor="email" className="block text-sm">
+                    Tài khoản email
+                  </Label>
                   <Input
                     type="email"
                     id="email"
@@ -77,14 +96,17 @@ export function SignupForm({
                   )}
                 </div>
               </div>
-              {/* password */}
-              <div className="grid grid-col gap-2">
+
+              {/* Password */}
+              <div className="grid grid-cols-1 gap-2">
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="block text-sm">Mật khẩu</Label>
+                  <Label htmlFor="password" className="block text-sm">
+                    Mật khẩu
+                  </Label>
                   <Input
                     type="password"
                     id="password"
-                    placeholder="#@jdfebh3bvdesw3622w3"
+                    placeholder="••••••••"
                     {...register("password")}
                   />
                   {errors.password && (
@@ -94,35 +116,50 @@ export function SignupForm({
                   )}
                 </div>
               </div>
-              {/* nút đăng kí */}
+
+              {/* Submit Button */}
               <Button
                 type="submit"
                 className="w-full"
                 disabled={isSubmitting || isLoading}
               >
-                {isSubmitting || isLoading ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
+                {isSubmitting || isLoading
+                  ? "Đang tạo tài khoản..."
+                  : "Tạo tài khoản"}
               </Button>
 
               <div className="text-center text-sm">
-                Đã có tài khoản? {" "}
-                <a href="/signin" className="underline underline-offset-4">
+                Đã có tài khoản?{" "}
+                <Link href="/signin" className="underline underline-offset-4">
                   Đăng nhập
-                </a>
+                </Link>
               </div>
             </div>
           </form>
+
           <div className="bg-muted relative hidden md:block">
-            <img
-              src="/placeholderSignUp.png"
+            <Image
+              src="/placeholder.png"
               alt="Image"
-              className="absolute top-1/2 -translate-y-1/2 object-cover"
+              fill
+              className="object-cover"
+              priority
+              unoptimized
             />
           </div>
         </CardContent>
       </Card>
-      <div className="text-xs text-balance px-6 text-center *:[a]:hover:text-primary text-muted-forceground *:[a]:underline *:[a]underline-offset-4">
-        Bằng cách tiếp tục, bạn đồng ý với <a href="#">Điều khoản dịch vụ</a> và{" "}
-        and <a href="#">Chính sách bảo mật của chúng tôi</a>.
+
+      <div className="text-xs text-balance px-6 text-center text-muted-foreground">
+        Bằng cách tiếp tục, bạn đồng ý với{" "}
+        <Link href="#" className="underline underline-offset-4 hover:text-primary">
+          Điều khoản dịch vụ
+        </Link>{" "}
+        và{" "}
+        <Link href="#" className="underline underline-offset-4 hover:text-primary">
+          Chính sách bảo mật của chúng tôi
+        </Link>
+        .
       </div>
     </div>
   );
