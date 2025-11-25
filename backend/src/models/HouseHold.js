@@ -1,7 +1,11 @@
+import pool from "../libs/db.js";
+
 export const HouseHold = {
     async getAll() {
         const res = await pool.query(
-            `SELECT * FROM house_holds`
+            `SELECT house_hold_id, room_number, room_type, floor, area, house_hold_head 
+             FROM house_holds 
+             ORDER BY room_number`
         );
         return res.rows;
     },

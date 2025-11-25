@@ -30,7 +30,9 @@ export default function InvoicesPage() {
   const [loading, setLoading] = useState(true);
   const [payingId, setPayingId] = useState<string | null>(null);
 
-  const isUserInactive = user?.status === "inactive";
+  const isUserPending = user?.status === "pending";
+  const isUserRejected = user?.status === "rejected";
+  const isUserNotActive = user?.status !== "active";
   const pendingInvoices = invoices.filter((i) => i.status === "pending" || i.status === "overdue");
   const paidInvoices = invoices.filter((i) => i.status === "paid");
 
@@ -67,8 +69,10 @@ export default function InvoicesPage() {
   };
 
   const handlePayInvoice = async (invoice: Invoice) => {
-    if (isUserInactive) {
-      toast.error("Tài khoản chưa được kích hoạt. Vui lòng hoàn tất đăng ký thông tin cư dân.");
+    if (isUserNotActive) {
+      toast.error(isUserPending 
+        ? "Tài khoản đang chờ duyệt. Vui lòng chờ ban quản lý phê duyệt."
+        : "Tài khoản bị từ chối. Vui lòng liên hệ ban quản lý.");
       return;
     }
 
@@ -128,14 +132,15 @@ export default function InvoicesPage() {
         </div>
 
         {/* Notice for inactive users */}
-        {isUserInactive && (
+        {isUserNotActive && (
           <Card className="border-orange-500/50 bg-orange-50 dark:bg-orange-950/20">
             <CardContent className="py-4">
               <div className="flex items-center gap-3">
                 <Ban className="h-5 w-5 text-orange-500" />
                 <p className="text-sm text-orange-700 dark:text-orange-400">
-                  Tài khoản chưa kích hoạt. Bạn có thể xem hóa đơn nhưng không thể thanh toán. 
-                  Vui lòng hoàn tất đăng ký thông tin cư dân để sử dụng chức năng này.
+                  {isUserPending 
+                    ? "Tài khoản đang chờ duyệt. Bạn có thể xem hóa đơn nhưng không thể thanh toán. Vui lòng chờ ban quản lý phê duyệt."
+                    : "Tài khoản bị từ chối. Bạn không thể thanh toán hóa đơn. Vui lòng liên hệ ban quản lý."}
                 </p>
               </div>
             </CardContent>
@@ -265,7 +270,7 @@ export default function InvoicesPage() {
                         <Button 
                           size="sm" 
                           onClick={() => handlePayInvoice(invoice)}
-                          disabled={isUserInactive || payingId === invoice.invoice_id}
+                          disabled={isUserNotActive || payingId === invoice.invoice_id}
                         >
                           {payingId === invoice.invoice_id ? (
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />

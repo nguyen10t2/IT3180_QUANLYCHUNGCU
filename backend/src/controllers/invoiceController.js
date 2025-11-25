@@ -6,7 +6,7 @@ export const getInvoices = async (req, res) => {
     try {
         const user_id = req.user?.user_id;
         if (!user_id) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Lỗi xác thực" });
         }
 
         const resident = await Resident.getResidentByUserId({ user_id });
@@ -31,7 +31,7 @@ export const getInvoiceDetails = async (req, res) => {
         const { invoice_id } = req.params;
 
         if (!user_id) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Lỗi xác thực" });
         }
 
         const invoice = await Invoice.getInvoiceById({ invoice_id });
@@ -60,7 +60,7 @@ export const payInvoice = async (req, res) => {
         const { payment_method, transaction_id } = req.body;
 
         if (!user_id) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Lỗi xác thực" });
         }
 
         // Lấy status từ database thay vì từ JWT

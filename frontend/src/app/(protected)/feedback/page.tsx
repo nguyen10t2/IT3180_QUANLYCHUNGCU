@@ -32,7 +32,9 @@ export default function FeedbackPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const isUserInactive = user?.status === "inactive";
+  const isUserPending = user?.status === "pending";
+  const isUserRejected = user?.status === "rejected";
+  const isUserNotActive = user?.status !== "active";
 
   // Form state
   const [formData, setFormData] = useState<CreateFeedbackData>({
@@ -61,8 +63,10 @@ export default function FeedbackPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (isUserInactive) {
-      toast.error("Tài khoản chưa được kích hoạt. Vui lòng hoàn tất đăng ký thông tin cư dân.");
+    if (isUserNotActive) {
+      toast.error(isUserPending 
+        ? "Tài khoản đang chờ duyệt. Vui lòng chờ ban quản lý phê duyệt."
+        : "Tài khoản bị từ chối. Vui lòng liên hệ ban quản lý.");
       return;
     }
 
@@ -163,14 +167,15 @@ export default function FeedbackPage() {
         </div>
 
         {/* Notice for inactive users */}
-        {isUserInactive && (
+        {isUserNotActive && (
           <Card className="border-orange-500/50 bg-orange-50 dark:bg-orange-950/20">
             <CardContent className="py-4">
               <div className="flex items-center gap-3">
                 <Ban className="h-5 w-5 text-orange-500" />
                 <p className="text-sm text-orange-700 dark:text-orange-400">
-                  Tài khoản chưa kích hoạt. Bạn có thể xem phản hồi cũ nhưng không thể gửi mới. 
-                  Vui lòng hoàn tất đăng ký thông tin cư dân để sử dụng chức năng này.
+                  {isUserPending 
+                    ? "Tài khoản đang chờ duyệt. Bạn có thể xem phản hồi cũ nhưng không thể gửi mới. Vui lòng chờ ban quản lý phê duyệt."
+                    : "Tài khoản bị từ chối. Bạn không thể gửi phản hồi mới. Vui lòng liên hệ ban quản lý."}
                 </p>
               </div>
             </CardContent>
@@ -179,7 +184,7 @@ export default function FeedbackPage() {
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* Feedback Form */}
-          <Card className={isUserInactive ? "opacity-60" : ""}>
+          <Card className={isUserNotActive? "opacity-60" : ""}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5 text-primary" />
@@ -198,7 +203,7 @@ export default function FeedbackPage() {
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="Nhập tiêu đề phản hồi..."
-                    disabled={isUserInactive}
+                    disabled={isUserNotActive}
                   />
                 </div>
 
@@ -209,7 +214,7 @@ export default function FeedbackPage() {
                       id="type"
                       value={formData.type}
                       onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
-                      disabled={isUserInactive}
+                      disabled={isUserNotActive}
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <option value="suggestion">Đề xuất</option>
@@ -225,7 +230,7 @@ export default function FeedbackPage() {
                       id="priority"
                       value={formData.priority}
                       onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
-                      disabled={isUserInactive}
+                      disabled={isUserNotActive}
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <option value="low">Thấp</option>
@@ -244,7 +249,7 @@ export default function FeedbackPage() {
                     value={formData.content}
                     onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                     placeholder="Nhập nội dung phản hồi của bạn..."
-                    disabled={isUserInactive}
+                    disabled={isUserNotActive}
                     className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 resize-none disabled:cursor-not-allowed disabled:opacity-50"
                   />
                 </div>
@@ -252,14 +257,14 @@ export default function FeedbackPage() {
                 <Button 
                   type="submit" 
                   className="w-full" 
-                  disabled={isUserInactive || submitting}
+                  disabled={isUserNotActive || submitting}
                 >
                   {submitting ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   ) : (
                     <Send className="h-4 w-4 mr-2" />
                   )}
-                  {isUserInactive ? "Chức năng bị khóa" : "Gửi phản hồi"}
+                  {isUserNotActive ? "Chức năng bị khóa" : "Gửi phản hồi"}
                 </Button>
               </form>
             </CardContent>

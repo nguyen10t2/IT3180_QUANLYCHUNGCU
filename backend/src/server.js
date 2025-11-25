@@ -9,6 +9,7 @@ import invoiceRoute from './routes/invoiceRoute.js';
 import feedbackRoute from './routes/feedbackRoute.js';
 import cookieParser from 'cookie-parser';
 import cors from "cors";
+import './libs/clearRubbish.js';
 
 dotenv.config();
 

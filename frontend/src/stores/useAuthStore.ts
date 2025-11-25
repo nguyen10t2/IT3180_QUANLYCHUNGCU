@@ -14,7 +14,7 @@ export const useAuthStore = create<AuthState>()(
       loading: false,
 
       setAccessToken: (token: string) => {
-        console.log("Setting accessToken:", token);
+        //console.log("Setting accessToken:", token);
         set({ accessToken: token });
       },
 

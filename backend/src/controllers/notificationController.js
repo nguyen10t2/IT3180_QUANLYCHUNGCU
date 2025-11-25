@@ -5,7 +5,7 @@ export const getNotifications = async (req, res) => {
     try {
         const user_id = req.user?.user_id;
         if (!user_id) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Lỗi xác thực" });
         }
 
         const resident = await Resident.getResidentByUserId({ user_id });
@@ -29,7 +29,7 @@ export const markAsRead = async (req, res) => {
         const { notification_id } = req.params;
 
         if (!user_id) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Lỗi xác thực" });
         }
 
         await Notification.markAsRead({ notification_id, user_id });
@@ -45,7 +45,7 @@ export const markAllAsRead = async (req, res) => {
     try {
         const user_id = req.user?.user_id;
         if (!user_id) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Lỗi xác thực" });
         }
 
         const resident = await Resident.getResidentByUserId({ user_id });

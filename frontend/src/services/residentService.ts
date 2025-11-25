@@ -44,14 +44,23 @@ export interface CreateResidentData {
   occupation?: string;
 }
 
+export interface GetMyResidentResponse {
+  resident: Resident | null;
+  isNewResident: boolean;
+  userInfo?: {
+    fullname: string;
+    email: string;
+  };
+}
+
 export const residentService = {
   // Lấy thông tin cư dân của user đang đăng nhập
-  async getMyResident(): Promise<{ resident: Resident }> {
+  async getMyResident(): Promise<GetMyResidentResponse> {
     const response = await axiosInstance.get("/api/residents/me");
     return response.data;
   },
 
-  // Tạo mới thông tin cư dân (dành cho user inactive lần đầu)
+  // Tạo mới thông tin cư dân (dành cho user pending lần đầu)
   async createMyResident(data: CreateResidentData): Promise<{ message: string; resident: Resident }> {
     const response = await axiosInstance.post("/api/residents/me", data);
     return response.data;

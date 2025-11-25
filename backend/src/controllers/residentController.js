@@ -1,3 +1,4 @@
+import { HouseHold } from "../models/HouseHold.js";
 import { Resident } from "../models/Resident.js";
 import { User } from "../models/User.js";
 
@@ -6,15 +7,23 @@ export const getResidents = async (req, res) => {
 
         const user_id = req.user?.user_id;
         if (!user_id) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Lỗi xác thực" });
         }
 
         const resident = await Resident.getResidentByUserId({ user_id });
         if (!resident) {
-            return res.status(404).json({ message: "Không tìm thấy cư dân" });
+            const user = await User.findUserById({ user_id });
+            return res.status(200).json({ 
+                resident: null,
+                isNewResident: true,
+                userInfo: {
+                    fullname: user?.fullname || "",
+                    email: user?.email || ""
+                }
+            });
         }   
 
-        return res.status(200).json({ resident });
+        return res.status(200).json({ resident, isNewResident: false });
 
     } catch (error) {
         console.error("Lỗi khi gọi getResidents", error);
@@ -28,7 +37,7 @@ export const createResident = async (req, res) => {
         const userStatus = req.user?.status;
 
         if (!user_id) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Lỗi xác thực" });
         }
 
         const existingResident = await Resident.getResidentIdFromUserId({ user_id });
@@ -81,7 +90,7 @@ export const createResident = async (req, res) => {
 
 export const getHouseHolds = async (req, res) => {
     try {
-        const houseHolds = await Resident.getAllHouseHolds();
+        const houseHolds = await HouseHold.getAll();
         return res.status(200).json({ houseHolds });
     } catch (error) {
         console.error("Lỗi khi lấy danh sách hộ:", error);
@@ -93,7 +102,7 @@ export const updateResident = async (req, res) => {
     try {
         const user_id = req.user?.user_id;
         if (!user_id) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Lỗi xác thực" });
         }
 
         const resident_id = await Resident.getResidentIdFromUserId({ user_id });

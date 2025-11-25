@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layout";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { residentService, Resident, HouseHold, CreateResidentData } from "@/services/residentService";
+import { residentService, Resident, HouseHold, CreateResidentData, GetMyResidentResponse } from "@/services/residentService";
 import {
   Card,
   CardContent,
@@ -109,7 +109,9 @@ export default function AccountPage() {
     occupation: "",
   });
 
-  const isUserInactive = user?.status === "inactive";
+  const isUserPending = user?.status === "pending";
+  const isUserRejected = user?.status === "rejected";
+  const isUserNotActive = user?.status !== "active";
 
   useEffect(() => {
     fetchData();
@@ -123,15 +125,20 @@ export default function AccountPage() {
       const houseHoldsData = await residentService.getHouseHolds();
       setHouseHolds(houseHoldsData.houseHolds);
 
-      // Try to fetch resident info
-      try {
-        const data = await residentService.getMyResident();
+      // Fetch resident info
+      const data = await residentService.getMyResident();
+      
+      if (data.isNewResident || !data.resident) {
+        // User chưa có resident record - điền sẵn fullname từ userInfo
+        setResident(null);
+        setNewResident(prev => ({
+          ...prev,
+          fullname: data.userInfo?.fullname || user?.fullname || "",
+        }));
+      } else {
         setResident(data.resident);
         setPhoneNumber(data.resident?.phone_number || "");
         setOccupation(data.resident?.occupation || "");
-      } catch {
-        // User chưa có resident record - bình thường với user inactive
-        setResident(null);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -377,16 +384,16 @@ export default function AccountPage() {
     </Card>
   );
 
-  // Render thông báo cho user inactive chưa có resident
-  const renderInactiveNotice = () => (
+  // Render thông báo cho user pending chưa có resident
+  const renderPendingNotice = () => (
     <Card className="md:col-span-2 border-orange-500/50">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-orange-600">
           <AlertCircle className="h-5 w-5" />
-          Tài khoản chưa kích hoạt
+          Hoàn tất đăng ký thông tin
         </CardTitle>
         <CardDescription>
-          Tài khoản của bạn đang ở trạng thái chưa kích hoạt. Bạn cần hoàn tất thông tin cư dân để được xét duyệt.
+          Tài khoản của bạn đang chờ được duyệt. Vui lòng hoàn tất thông tin cư dân.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -401,7 +408,7 @@ export default function AccountPage() {
         </div>
 
         <div className="bg-muted/50 p-4 rounded-lg">
-          <h4 className="font-medium mb-2">Chức năng bị giới hạn khi chưa kích hoạt:</h4>
+          <h4 className="font-medium mb-2">Chức năng bị giới hạn khi chưa được duyệt:</h4>
           <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
             <li>Không thể thanh toán hóa đơn</li>
             <li>Không thể gửi phản ánh/góp ý</li>
@@ -419,7 +426,7 @@ export default function AccountPage() {
     </Card>
   );
 
-  // Render thông báo đang chờ duyệt (có resident nhưng user vẫn inactive)
+  // Render thông báo đang chờ duyệt (có resident nhưng user vẫn pending)
   const renderPendingApproval = () => (
     <Card className="md:col-span-2 border-blue-500/50">
       <CardHeader>
@@ -436,6 +443,29 @@ export default function AccountPage() {
           <p className="text-sm text-muted-foreground">
             Ban quản lý sẽ xem xét và phê duyệt thông tin của bạn. Sau khi được duyệt, 
             tài khoản sẽ được kích hoạt và bạn có thể sử dụng đầy đủ các tính năng.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  // Render thông báo bị từ chối
+  const renderRejectedNotice = () => (
+    <Card className="md:col-span-2 border-red-500/50">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-red-600">
+          <AlertCircle className="h-5 w-5" />
+          Tài khoản bị từ chối
+        </CardTitle>
+        <CardDescription>
+          Tài khoản của bạn đã bị từ chối. Vui lòng liên hệ ban quản lý để biết thêm chi tiết.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded-lg">
+          <p className="text-sm text-muted-foreground">
+            Nếu bạn cho rằng đây là sự nhầm lẫn, vui lòng liên hệ trực tiếp với ban quản lý 
+            tòa nhà để được hỗ trợ.
           </p>
         </div>
       </CardContent>
@@ -476,8 +506,10 @@ export default function AccountPage() {
                   <Badge variant="secondary">
                     {user?.role ? getRoleLabel(user.role) : "Cư dân"}
                   </Badge>
-                  {isUserInactive ? (
-                    <Badge variant="destructive">Chưa kích hoạt</Badge>
+                  {isUserNotActive ? (
+                    <Badge variant={isUserRejected ? "destructive" : "warning"}>
+                      {isUserPending ? "Chờ duyệt" : "Bị từ chối"}
+                    </Badge>
                   ) : (
                     <Badge variant="success">Đã kích hoạt</Badge>
                   )}
@@ -497,7 +529,7 @@ export default function AccountPage() {
                   <div className="flex items-center gap-3 text-sm">
                     <Shield className="h-4 w-4 text-muted-foreground" />
                     <span className="text-muted-foreground">
-                      Trạng thái: {user?.status === "active" ? "Hoạt động" : "Chờ kích hoạt"}
+                      Trạng thái: {user?.status === "active" ? "Hoạt động" : user?.status === "pending" ? "Chờ duyệt" : "Bị từ chối"}
                     </span>
                   </div>
                   {resident?.room_number && (
@@ -513,12 +545,13 @@ export default function AccountPage() {
             </Card>
 
             {/* Content based on status */}
-            {isUserInactive && !resident && !isCreating && renderInactiveNotice()}
-            {isUserInactive && !resident && isCreating && renderCreateResidentForm()}
-            {isUserInactive && resident && renderPendingApproval()}
+            {isUserPending && !resident && !isCreating && renderPendingNotice()}
+            {isUserPending && !resident && isCreating && renderCreateResidentForm()}
+            {isUserPending && resident && renderPendingApproval()}
+            {isUserRejected && renderRejectedNotice()}
 
             {/* Info Card - Chỉ hiện khi user active hoặc có resident và đang chờ duyệt */}
-            {((!isUserInactive && resident) || (isUserInactive && resident)) && (
+            {((!isUserNotActive && resident) || (isUserPending && resident)) && (
               <Card className="md:col-span-2">
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div>
@@ -527,11 +560,11 @@ export default function AccountPage() {
                       Thông tin cư dân của bạn
                     </CardDescription>
                   </div>
-                  {!isUserInactive && !isEditing ? (
+                  {!isUserNotActive && !isEditing ? (
                     <Button variant="outline" onClick={() => setIsEditing(true)}>
                       Chỉnh sửa
                     </Button>
-                  ) : !isUserInactive && isEditing ? (
+                  ) : !isUserNotActive && isEditing ? (
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={handleCancel} disabled={saving}>
                         <X className="h-4 w-4 mr-1" />
@@ -604,12 +637,12 @@ export default function AccountPage() {
                       {/* Thông tin có thể chỉnh sửa */}
                       <div>
                         <h3 className="text-sm font-medium mb-4 text-muted-foreground">
-                          Thông tin liên hệ {!isUserInactive && "(có thể chỉnh sửa)"}
+                          Thông tin liên hệ {!isUserNotActive && "(có thể chỉnh sửa)"}
                         </h3>
                         <div className="grid gap-4 md:grid-cols-2">
                           <div className="space-y-2">
                             <Label htmlFor="phone">Số điện thoại</Label>
-                            {isEditing && !isUserInactive ? (
+                            {isEditing && !isUserNotActive ? (
                               <Input
                                 id="phone"
                                 value={phoneNumber}
@@ -625,7 +658,7 @@ export default function AccountPage() {
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="occupation">Nghề nghiệp</Label>
-                            {isEditing && !isUserInactive ? (
+                            {isEditing && !isUserNotActive ? (
                               <Input
                                 id="occupation"
                                 value={occupation}
@@ -648,7 +681,7 @@ export default function AccountPage() {
             )}
 
             {/* Trường hợp user active nhưng chưa có resident (hiếm) */}
-            {!isUserInactive && !resident && (
+            {!isUserNotActive && !resident && (
               <Card className="md:col-span-2">
                 <CardContent className="py-8">
                   <div className="text-center">

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const RoleEnum = z.enum(["admin", "manager", "resident", "accountant"]);
-export const StatusEnum = z.enum(["active", "inactive"]);
+export const StatusEnum = z.enum(["active", "pending", "rejected"]);
 export const RelationShipEnum = z.enum([
   "chusohuu",
   "nguoidaidien",

@@ -6,7 +6,7 @@ export const getFeedbacks = async (req, res) => {
     try {
         const user_id = req.user?.user_id;
         if (!user_id) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Lỗi xác thực" });
         }
 
         const feedbacks = await Feedback.getFeedbacksByUser({ user_id });
@@ -23,7 +23,7 @@ export const createFeedback = async (req, res) => {
         const user_id = req.user?.user_id;
 
         if (!user_id) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Lỗi xác thực" });
         }
 
         // Lấy status từ database thay vì từ JWT
@@ -68,7 +68,7 @@ export const getFeedbackDetails = async (req, res) => {
         const { feedback_id } = req.params;
 
         if (!user_id) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Lỗi xác thực" });
         }
 
         const feedback = await Feedback.getFeedbackWithComments({ feedback_id, user_id });

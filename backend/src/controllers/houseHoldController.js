@@ -79,3 +79,21 @@ export const updateHouseHold = async (req, res) => {
         return res.status(500).json({ message: "Lỗi hệ thống" });
     }
 };
+
+export const deleteHouseHold = async (req, res) => {
+    try {
+        
+        const { id } = req.params;
+        const houseHold = await HouseHold.getById({ house_hold_id: id });
+        if (!houseHold) {
+            return res.status(404).json({ message: "Không tìm thấy hộ dân" });
+        }
+
+        await HouseHold.delete({ house_hold_id: id });
+        
+        return res.status(200).json({ message: "Xóa hộ dân thành công!" });
+    } catch (error) {
+        console.error("Lỗi khi xóa hộ dân:", error);
+        return res.status(500).json({ message: "Lỗi hệ thống" });
+    }
+};

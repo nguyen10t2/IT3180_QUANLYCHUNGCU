@@ -30,7 +30,9 @@ export default function NotificationsPage() {
   const [loading, setLoading] = useState(true);
   const [markingAll, setMarkingAll] = useState(false);
 
-  const isUserInactive = user?.status === "inactive";
+  const isUserPending = user?.status === "pending";
+  const isUserRejected = user?.status === "rejected";
+  const isUserNotActive = user?.status !== "active";
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   useEffect(() => {
@@ -142,14 +144,15 @@ export default function NotificationsPage() {
         </div>
 
         {/* Notice for inactive users */}
-        {isUserInactive && (
+        {isUserNotActive && (
           <Card className="border-orange-500/50 bg-orange-50 dark:bg-orange-950/20">
             <CardContent className="py-4">
               <div className="flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-orange-500" />
                 <p className="text-sm text-orange-700 dark:text-orange-400">
-                  Tài khoản chưa kích hoạt. Bạn chỉ nhận được thông báo chung, 
-                  thông báo hộ gia đình sẽ được hiển thị sau khi kích hoạt.
+                  {isUserPending 
+                    ? "Tài khoản đang chờ duyệt. Bạn chỉ nhận được thông báo chung, thông báo hộ gia đình sẽ được hiển thị sau khi được duyệt."
+                    : "Tài khoản bị từ chối. Vui lòng liên hệ ban quản lý để biết thêm chi tiết."}
                 </p>
               </div>
             </CardContent>
