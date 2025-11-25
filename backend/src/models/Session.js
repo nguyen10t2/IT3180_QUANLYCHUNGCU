@@ -3,7 +3,7 @@ import pool from "../libs/db.js";
 export const Session = {
     async findOne({refresh_token}) {
         const res = await pool.query(
-            `SELECT * FROM session
+            `SELECT * FROM sessions
             WHERE refresh_token = $1`,
             [refresh_token]
         );
@@ -12,7 +12,7 @@ export const Session = {
 
     async deleteOne({refresh_token}) {
         const res = await pool.query(
-            `DELETE FROM session
+            `DELETE FROM sessions
             WHERE refresh_token = $1
             RETURNING *`,
             [refresh_token]
@@ -22,7 +22,7 @@ export const Session = {
 
     async create({user_id, refresh_token, expires_at}) {
         const res = await pool.query(
-            `INSERT INTO session (user_id, refresh_token, expires_at)
+            `INSERT INTO sessions (user_id, refresh_token, expires_at)
             VALUES ($1, $2, $3)
             RETURNING *`,
             [user_id, refresh_token, expires_at]
@@ -31,6 +31,6 @@ export const Session = {
     },
 
     async cleanupExpired() {
-        await pool.query('DELETE FROM session WHERE expires_at <= NOW() OR user_id = NULL');
+        await pool.query('DELETE FROM sessions WHERE expires_at <= NOW() OR user_id IS NULL');
     },
 };

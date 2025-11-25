@@ -2,11 +2,16 @@ import pool from '../libs/db.js';
 
 export const Otp = {
     async create({email, otp, expires_at}) {
+        await pool.query(
+            `UPDATE otp_tokens SET is_used = TRUE, updated_at = NOW() 
+             WHERE email = $1 AND is_used = FALSE`,
+            [email]
+        );
+        
         const res = await pool.query(
             `INSERT INTO otp_tokens (email, otp, expires_at, is_used, created_at, updated_at)
             VALUES ($1, $2, $3, FALSE, NOW(), NOW())
-            ON CONFLICT (email) DO UPDATE 
-            SET otp = $2, expires_at = $3, is_used = FALSE, updated_at = NOW()`,
+            RETURNING *`,
             [email, otp, expires_at]
         );
         return res.rowCount;

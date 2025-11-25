@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 import { connectDB } from './libs/db.js';
 import authRoute from './routes/authRoute.js';
 import userRoute from './routes/userRoute.js';
+import residentRoute from './routes/residentRoute.js';
+import notificationRoute from './routes/notificationRoute.js';
+import invoiceRoute from './routes/invoiceRoute.js';
+import feedbackRoute from './routes/feedbackRoute.js';
 import cookieParser from 'cookie-parser';
 import cors from "cors";
 
@@ -23,6 +27,14 @@ app.use(cookieParser());
 app.use('/api/auth', authRoute);
 
 app.use('/api/users', userRoute);
+
+app.use('/api/residents', residentRoute);
+
+app.use('/api/notifications', notificationRoute);
+
+app.use('/api/invoices', invoiceRoute);
+
+app.use('/api/feedbacks', feedbackRoute);
 
 connectDB().then(() => {
     app.listen(PORT, () => {

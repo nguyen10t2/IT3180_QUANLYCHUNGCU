@@ -1,8 +1,17 @@
-import { getResidents } from "../controllers/residentController";
-import { updateMe } from "../controllers/userController";
-import pool from "../libs/db";
+import pool from "../libs/db.js";
 
 export const Resident = {
+    // Tạo mới resident (khi user inactive gửi thông tin lần đầu)
+    async create({ house_id, fullname, id_card, date_of_birth, phone_number, gender, role, status, occupation }) {
+        const res = await pool.query(
+            `INSERT INTO residents (house_id, fullname, id_card, date_of_birth, phone_number, gender, role, status, occupation)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+             RETURNING *`,
+            [house_id, fullname, id_card, date_of_birth, phone_number, gender, role, status, occupation]
+        );
+        return res.rows[0];
+    },
+
     async updateResident({resident_id, data}) {
         const fields = [];
         const values = [];
@@ -28,8 +37,7 @@ export const Resident = {
         const res = await pool.query(
             `SELECT EXISTS(
                 SELECT 1 FROM residents
-                WHERE phone_number = $1     
-            )`,
+                WHERE phone_number = $1)`,
             [phone_number]
         );
         return res.rows[0].exists;
@@ -87,20 +95,41 @@ export const Resident = {
 
     async getResidentByUserId({user_id}) {
         const res = await pool.query(
-            `SELECT r.* FRIM residents r
-            INNER JOIN users u ON r.resident_id = u.resident_id
-            WHERE u.user_id = $1`,
+            `SELECT r.*, h.room_number, h.floor 
+             FROM residents r
+             LEFT JOIN house_holds h ON r.house_id = h.house_hold_id
+             INNER JOIN users u ON r.resident_id = u.resident_id
+             WHERE u.user_id = $1`,
             [user_id]
         );
         return res?.rows[0];
     },
     async getResidentIdFromUserId({user_id}) {
         const res = await pool.query(
-            `SELECT r.resident_id FRIM residents r
-            INNER JOIN users u ON r.resident_id = u.resident_id
-            WHERE u.user_id = $1`,
+            `SELECT r.resident_id FROM residents r
+             INNER JOIN users u ON r.resident_id = u.resident_id
+             WHERE u.user_id = $1`,
             [user_id]
         );
-        return res?.rows[0];
+        return res?.rows[0]?.resident_id;
+    },
+
+    // Lấy danh sách tất cả house_holds để user chọn
+    async getAllHouseHolds() {
+        const res = await pool.query(
+            `SELECT house_hold_id, room_number, room_type, floor, area, house_hold_head 
+             FROM house_holds 
+             ORDER BY room_number`
+        );
+        return res.rows;
+    },
+
+    // Kiểm tra id_card đã tồn tại chưa
+    async isIdCardExists({ id_card }) {
+        const res = await pool.query(
+            `SELECT EXISTS(SELECT 1 FROM residents WHERE id_card = $1)`,
+            [id_card]
+        );
+        return res.rows[0].exists;
     }
 };

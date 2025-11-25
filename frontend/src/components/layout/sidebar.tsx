@@ -35,7 +35,7 @@ const navigationItems = [
     icon: Home,
   },
   {
-    name: "Tài khoản",
+    name: "Thông tin",
     href: "/account",
     icon: User,
   },

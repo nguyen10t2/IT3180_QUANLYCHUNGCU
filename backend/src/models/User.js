@@ -60,4 +60,24 @@ export const User = {
         );
         return res.rows[0];
     },
+
+    async updateResidentId({ user_id, resident_id }) {
+        const res = await pool.query(
+            `UPDATE users SET resident_id = $1
+            WHERE user_id = $2
+            RETURNING *`,
+            [resident_id, user_id]
+        );
+        return res.rows[0];
+    },
+    
+    async updateStatus({ user_id, status }) {
+        const res = await pool.query(
+            `UPDATE users SET status = $1
+            WHERE user_id = $2
+            RETURNING *`,
+            [status, user_id]
+        );
+        return res.rows[0];
+    },
 };

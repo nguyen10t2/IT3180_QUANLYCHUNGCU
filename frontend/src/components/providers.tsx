@@ -8,7 +8,6 @@ interface ProvidersProps {
 }
 
 export function Providers({ children }: ProvidersProps) {
-  // Hydrate auth store on mount
   useEffect(() => {
     useAuthStore.persist.rehydrate();
   }, []);
