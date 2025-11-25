@@ -1,6 +1,7 @@
 "use client";
 
 import { DashboardLayout } from "@/components/layout";
+import { useInvoiceStore } from "@/stores/useInvoiceStore";
 import {
   Card,
   CardContent,
@@ -10,46 +11,19 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Download, CreditCard, CheckCircle, Clock } from "lucide-react";
-
-const invoices = [
-  {
-    id: 1,
-    title: "Phí quản lý tháng 11/2025",
-    amount: "500,000",
-    dueDate: "30/11/2025",
-    status: "pending",
-  },
-  {
-    id: 2,
-    title: "Phí điện nước tháng 11/2025",
-    amount: "1,200,000",
-    dueDate: "30/11/2025",
-    status: "pending",
-  },
-  {
-    id: 3,
-    title: "Phí quản lý tháng 10/2025",
-    amount: "500,000",
-    dueDate: "30/10/2025",
-    status: "paid",
-  },
-  {
-    id: 4,
-    title: "Phí điện nước tháng 10/2025",
-    amount: "980,000",
-    dueDate: "30/10/2025",
-    status: "paid",
-  },
-];
+import { toast } from "sonner";
 
 export default function InvoicesPage() {
+  const { invoices, payInvoice, getTotalPending } = useInvoiceStore();
+  
   const pendingInvoices = invoices.filter((i) => i.status === "pending");
   const paidInvoices = invoices.filter((i) => i.status === "paid");
+  const totalPending = getTotalPending();
 
-  const totalPending = pendingInvoices.reduce(
-    (sum, i) => sum + parseInt(i.amount.replace(/,/g, "")),
-    0
-  );
+  const handlePayInvoice = (id: number, title: string) => {
+    payInvoice(id);
+    toast.success(`Thanh toán thành công: ${title}`);
+  };
 
   return (
     <DashboardLayout>
@@ -135,13 +109,18 @@ export default function InvoicesPage() {
                 </div>
                 <div className="flex items-center gap-4">
                   <span className="font-semibold">{invoice.amount} VNĐ</span>
-                  <Button size="sm">
+                  <Button size="sm" onClick={() => handlePayInvoice(invoice.id, invoice.title)}>
                     <CreditCard className="h-4 w-4 mr-2" />
                     Thanh toán
                   </Button>
                 </div>
               </div>
             ))}
+            {pendingInvoices.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                Không có hóa đơn nào cần thanh toán 🎉
+              </div>
+            )}
           </CardContent>
         </Card>
 

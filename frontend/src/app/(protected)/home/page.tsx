@@ -3,6 +3,7 @@
 import { DashboardLayout } from "@/components/layout";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useNotificationStore } from "@/stores/useNotificationStore";
+import { useInvoiceStore } from "@/stores/useInvoiceStore";
 import {
   Card,
   CardContent,
@@ -19,6 +20,9 @@ export default function HomePage() {
   const unreadCount = useNotificationStore((state) => 
     state.notifications.filter((n) => !n.read).length
   );
+  const pendingInvoiceCount = useInvoiceStore((state) =>
+    state.invoices.filter((i) => i.status === "pending").length
+  );
 
   const stats = [
     {
@@ -31,7 +35,7 @@ export default function HomePage() {
     },
     {
       title: "Hóa đơn",
-      value: "2",
+      value: pendingInvoiceCount.toString(),
       description: "Chưa thanh toán",
       icon: FileText,
       color: "text-orange-500",
