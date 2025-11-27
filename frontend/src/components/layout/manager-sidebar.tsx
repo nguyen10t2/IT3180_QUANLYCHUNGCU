@@ -5,14 +5,16 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
-  User,
-  Bell,
+  Users,
+  Building2,
   FileText,
-  MessageSquare,
+  UserCheck,
   LogOut,
   Settings,
   ChevronLeft,
   ChevronRight,
+  Bell,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -30,33 +32,43 @@ import { useState } from "react";
 
 const navigationItems = [
   {
-    name: "Trang chủ",
-    href: "/resident/home",
+    name: "Tổng quan",
+    href: "/manager/dashboard",
     icon: Home,
   },
   {
-    name: "Thông tin",
-    href: "/resident/account",
-    icon: User,
+    name: "Quản lý người dùng",
+    href: "/manager/users",
+    icon: Users,
   },
   {
-    name: "Thông báo",
-    href: "/resident/notifications",
-    icon: Bell,
+    name: "Quản lý hộ gia đình",
+    href: "/manager/households",
+    icon: Building2,
   },
   {
-    name: "Hóa đơn",
-    href: "/resident/invoices",
+    name: "Quản lý cư dân",
+    href: "/manager/residents",
+    icon: UserCheck,
+  },
+  {
+    name: "Quản lý hóa đơn",
+    href: "/manager/invoices",
     icon: FileText,
   },
   {
-    name: "Feedback",
-    href: "/resident/feedback",
+    name: "Thông báo",
+    href: "/manager/notifications",
+    icon: Bell,
+  },
+  {
+    name: "Phản hồi",
+    href: "/manager/feedbacks",
     icon: MessageSquare,
   },
 ];
 
-export function Sidebar() {
+export function ManagerSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, signOut } = useAuthStore();
@@ -85,7 +97,7 @@ export function Sidebar() {
     >
       {/* Logo */}
       <div className="p-4 border-b border-sidebar-border flex items-center justify-between">
-        <Link href="/resident/home" className="flex items-center gap-3">
+        <Link href="/manager/dashboard" className="flex items-center gap-3">
           <Image
             src="/logo.svg"
             alt="Building Logo"
@@ -94,9 +106,12 @@ export function Sidebar() {
             className="shrink-0"
           />
           {!collapsed && (
-            <span className="font-heading font-semibold text-lg text-sidebar-foreground">
-              Kogu
-            </span>
+            <div>
+              <span className="font-heading font-semibold text-lg text-sidebar-foreground">
+                Kogu
+              </span>
+              <span className="text-xs text-orange-500 ml-1 font-medium">Manager</span>
+            </div>
           )}
         </Link>
         <Button
@@ -116,7 +131,7 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {navigationItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
             <Link
               key={item.href}
@@ -149,33 +164,27 @@ export function Sidebar() {
             >
               <Avatar className="h-9 w-9 shrink-0">
                 <AvatarImage src="" alt={user?.fullname || "User"} />
-                <AvatarFallback className="bg-primary text-primary-foreground">
-                  {user?.fullname ? getInitials(user.fullname) : "U"}
+                <AvatarFallback className="bg-orange-500 text-white">
+                  {user?.fullname ? getInitials(user.fullname) : "M"}
                 </AvatarFallback>
               </Avatar>
               {!collapsed && (
                 <div className="flex-1 text-left min-w-0">
                   <p className="text-sm font-medium text-sidebar-foreground truncate">
-                    {user?.fullname || "User"}
+                    {user?.fullname || "Manager"}
                   </p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {user?.email || ""}
+                  <p className="text-xs text-orange-500 truncate">
+                    {user?.role === "admin" ? "Quản trị viên" : "Quản lý"}
                   </p>
                 </div>
               )}
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>Tài khoản của tôi</DropdownMenuLabel>
+            <DropdownMenuLabel>Tài khoản quản lý</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/resident/account" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                <span>Hồ sơ</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/resident/settings" className="flex items-center gap-2">
+              <Link href="/manager/settings" className="flex items-center gap-2">
                 <Settings className="h-4 w-4" />
                 <span>Cài đặt</span>
               </Link>

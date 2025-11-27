@@ -1,6 +1,32 @@
 import pool from "../libs/db.js";
 
 export const Feedback = {
+    async getAll() {
+        const res = await pool.query(
+            `SELECT f.*, u.fullname as user_name, h.room_number,
+                    (SELECT COUNT(*) FROM feedback_comments fc WHERE fc.feedback_id = f.feedback_id) as comment_count
+             FROM feedbacks f
+             LEFT JOIN users u ON f.user_id = u.user_id
+             LEFT JOIN house_holds h ON f.house_hold_id = h.house_hold_id
+             ORDER BY f.created_at DESC`
+        );
+        return res.rows;
+    },
+
+    async respond({ feedback_id, response, responded_by }) {
+        const res = await pool.query(
+            `UPDATE feedbacks 
+             SET status = 'resolved', 
+                 resolution_notes = $2, 
+                 assigned_to = $3,
+                 resolved_at = NOW()
+             WHERE feedback_id = $1 
+             RETURNING *`,
+            [feedback_id, response, responded_by]
+        );
+        return res.rows[0];
+    },
+
     async getFeedbacksByUser({ user_id }) {
         const res = await pool.query(
             `SELECT f.*, 

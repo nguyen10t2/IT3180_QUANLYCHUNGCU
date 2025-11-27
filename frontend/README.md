@@ -2,7 +2,7 @@
 
 Hệ thống quản lý chung cư thông minh - Frontend được rebuild bằng Next.js 15 với App Router.
 
-## 🚀 Tính năng
+## Tính năng
 
 - **Next.js 15** với App Router
 - **React 19** với Server Components
@@ -13,7 +13,7 @@ Hệ thống quản lý chung cư thông minh - Frontend được rebuild bằng
 - **Axios** cho API calls
 - **Sonner** cho toast notifications
 
-## 📁 Cấu trúc thư mục
+## Cấu trúc thư mục
 
 ```
 src/
@@ -37,7 +37,7 @@ src/
 └── types/                 # TypeScript types
 ```
 
-## 🛠️ Cài đặt
+## Cài đặt
 
 1. Cài đặt dependencies:
 
@@ -60,24 +60,24 @@ npm run dev
 
 4. Mở [http://localhost:3000](http://localhost:3000) trên trình duyệt.
 
-## 📝 Scripts
+## Scripts
 
 - `npm run dev` - Chạy development server
 - `npm run build` - Build production
 - `npm run start` - Chạy production server
 - `npm run lint` - Kiểm tra linting
 
-## 🔐 Authentication Flow
+## Authentication Flow
 
 1. **Sign Up** → OTP Verification → Sign In
 2. **Sign In** → Home (Protected)
 3. **Forgot Password** → OTP Verification → Reset Password → Sign In
 
-## 🎨 Theme
+## Theme
 
 Sử dụng CSS variables để hỗ trợ dark/light mode. Xem `globals.css` để tùy chỉnh theme.
 
-## 📦 Dependencies chính
+## Dependencies chính
 
 - `next` - Framework
 - `react` & `react-dom` - UI library

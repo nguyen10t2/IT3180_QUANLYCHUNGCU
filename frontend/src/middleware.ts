@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Define protected and public paths
-const protectedPaths = ['/home', '/account', '/notifications', '/invoices', '/feedback', '/settings'];
+const residentPaths = ['/resident/home', '/resident/account', '/resident/notifications', '/resident/invoices', '/resident/feedback', '/resident/settings'];
+const managerPaths = ['/manager'];
 const authPaths = ['/signin', '/signup', '/forgot-password', '/reset-password', '/otp', '/verify-otp-reset'];
 
 export function middleware(request: NextRequest) {

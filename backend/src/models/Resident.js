@@ -1,6 +1,16 @@
 import pool from "../libs/db.js";
 
 export const Resident = {
+    async getAll() {
+        const res = await pool.query(
+            `SELECT r.*, h.room_number, h.floor
+             FROM residents r
+             LEFT JOIN house_holds h ON r.house_id = h.house_hold_id
+             ORDER BY r.fullname ASC`
+        );
+        return res.rows;
+    },
+
     async create({ house_id, fullname, id_card, date_of_birth, phone_number, gender, role, status, occupation }) {
         const res = await pool.query(
             `INSERT INTO residents (house_id, fullname, id_card, date_of_birth, phone_number, gender, role, status, occupation)
@@ -112,16 +122,6 @@ export const Resident = {
             [user_id]
         );
         return res?.rows[0]?.resident_id;
-    },
-
-    // Lấy danh sách tất cả house_holds để user chọn
-    async getAllHouseHolds() {
-        const res = await pool.query(
-            `SELECT house_hold_id, room_number, room_type, floor, area, house_hold_head 
-             FROM house_holds 
-             ORDER BY room_number`
-        );
-        return res.rows;
     },
 
     // Kiểm tra id_card đã tồn tại chưa

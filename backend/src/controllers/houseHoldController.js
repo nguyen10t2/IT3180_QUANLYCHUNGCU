@@ -1,4 +1,3 @@
-import pool from "../libs/db";
 import { HouseHold } from "../models/HouseHold.js";
 
 export const getHouseHolds = async (req, res) => {
@@ -14,18 +13,19 @@ export const getHouseHolds = async (req, res) => {
 export const createHouseHold = async (req, res) => {
     try {
         
-        const { room_number, room_type, house_hold_head, floor, area } = req.body;
+        const { room_number, room_type, head_resident_id, floor, area, notes } = req.body;
 
-        if (!room_number || !room_type || !house_hold_head) {
+        if (!room_number || !room_type) {
             return res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin bắt buộc" });
         }
 
         const newHouseHold = await HouseHold.create({
             room_number,
             room_type,
-            house_hold_head,
+            head_resident_id: head_resident_id || null,
             floor: floor || null,
-            area: area || null
+            area: area || null,
+            notes: notes || null
         });
 
         return res.status(201).json({

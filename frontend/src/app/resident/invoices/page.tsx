@@ -11,11 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { 
   FileText, 
-  Download, 
-  CreditCard, 
   CheckCircle, 
   Clock, 
   Loader2,
@@ -28,7 +25,6 @@ export default function InvoicesPage() {
   const { user } = useAuthStore();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
-  const [payingId, setPayingId] = useState<string | null>(null);
 
   const isUserPending = user?.status === "pending";
   const isUserRejected = user?.status === "rejected";
@@ -68,36 +64,6 @@ export default function InvoicesPage() {
     }
   };
 
-  const handlePayInvoice = async (invoice: Invoice) => {
-    if (isUserNotActive) {
-      toast.error(isUserPending 
-        ? "Tài khoản đang chờ duyệt. Vui lòng chờ ban quản lý phê duyệt."
-        : "Tài khoản bị từ chối. Vui lòng liên hệ ban quản lý.");
-      return;
-    }
-
-    try {
-      setPayingId(invoice.invoice_id);
-      const data = await invoiceService.payInvoice(invoice.invoice_id);
-      
-      // Cập nhật state
-      setInvoices((prev) =>
-        prev.map((i) =>
-          i.invoice_id === invoice.invoice_id
-            ? { ...i, status: "paid" as const, paid_at: new Date().toISOString() }
-            : i
-        )
-      );
-      
-      toast.success(`Thanh toán thành công: Hóa đơn tháng ${invoice.period_month}/${invoice.period_year}`);
-    } catch (error: any) {
-      console.error("Error paying invoice:", error);
-      toast.error(error.response?.data?.message || "Không thể thanh toán");
-    } finally {
-      setPayingId(null);
-    }
-  };
-
   const formatAmount = (amount: string) => {
     return parseFloat(amount).toLocaleString("vi-VN");
   };
@@ -120,6 +86,33 @@ export default function InvoicesPage() {
     return diff;
   };
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "paid":
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600">
+            <CheckCircle className="h-3 w-3" />
+            Đã thanh toán
+          </span>
+        );
+      case "overdue":
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-600">
+            <AlertCircle className="h-3 w-3" />
+            Quá hạn
+          </span>
+        );
+      case "pending":
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-orange-500/10 text-orange-600">
+            <Clock className="h-3 w-3" />
+            Chờ thanh toán
+          </span>
+        );
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -127,7 +120,7 @@ export default function InvoicesPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Hóa đơn</h1>
           <p className="text-muted-foreground">
-            Quản lý và thanh toán các hóa đơn của bạn
+            Xem các hóa đơn và trạng thái thanh toán của bạn
           </p>
         </div>
 
@@ -139,13 +132,25 @@ export default function InvoicesPage() {
                 <Ban className="h-5 w-5 text-orange-500" />
                 <p className="text-sm text-orange-700 dark:text-orange-400">
                   {isUserPending 
-                    ? "Tài khoản đang chờ duyệt. Bạn có thể xem hóa đơn nhưng không thể thanh toán. Vui lòng chờ ban quản lý phê duyệt."
-                    : "Tài khoản bị từ chối. Bạn không thể thanh toán hóa đơn. Vui lòng liên hệ ban quản lý."}
+                    ? "Tài khoản đang chờ duyệt. Bạn có thể xem hóa đơn. Vui lòng chờ ban quản lý phê duyệt."
+                    : "Tài khoản bị từ chối. Vui lòng liên hệ ban quản lý."}
                 </p>
               </div>
             </CardContent>
           </Card>
         )}
+
+        {/* Payment Info Notice */}
+        <Card className="border-blue-500/50 bg-blue-50 dark:bg-blue-950/20">
+          <CardContent className="py-4">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-blue-500" />
+              <p className="text-sm text-blue-700 dark:text-blue-400">
+                Để thanh toán hóa đơn, vui lòng liên hệ trực tiếp với ban quản lý hoặc thanh toán qua tài khoản ngân hàng của tòa nhà.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -258,27 +263,13 @@ export default function InvoicesPage() {
                           <p className="text-sm text-muted-foreground">
                             {invoice.room_number} - Hạn: {formatDate(invoice.due_date)}
                           </p>
-                          {invoice.status === "overdue" && (
-                            <span className="text-xs text-red-500 font-medium">Quá hạn</span>
-                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
                         <span className="font-semibold">
                           {formatAmount(invoice.total_amount)} VNĐ
                         </span>
-                        <Button 
-                          size="sm" 
-                          onClick={() => handlePayInvoice(invoice)}
-                          disabled={isUserNotActive || payingId === invoice.invoice_id}
-                        >
-                          {payingId === invoice.invoice_id ? (
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          ) : (
-                            <CreditCard className="h-4 w-4 mr-2" />
-                          )}
-                          Thanh toán
-                        </Button>
+                        {getStatusBadge(invoice.status)}
                       </div>
                     </div>
                   ))
@@ -316,7 +307,7 @@ export default function InvoicesPage() {
                             Hóa đơn tháng {invoice.period_month}/{invoice.period_year}
                           </h4>
                           <p className="text-sm text-muted-foreground">
-                            {invoice.room_number} - Đã thanh toán: {invoice.paid_at ? formatDate(invoice.paid_at) : "N/A"}
+                            {invoice.room_number} - Thanh toán: {invoice.paid_at ? formatDate(invoice.paid_at) : "N/A"}
                           </p>
                         </div>
                       </div>
@@ -324,10 +315,7 @@ export default function InvoicesPage() {
                         <span className="font-semibold text-muted-foreground">
                           {formatAmount(invoice.total_amount)} VNĐ
                         </span>
-                        <Button variant="outline" size="sm">
-                          <Download className="h-4 w-4 mr-2" />
-                          Tải hóa đơn
-                        </Button>
+                        {getStatusBadge(invoice.status)}
                       </div>
                     </div>
                   ))

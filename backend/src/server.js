@@ -7,6 +7,7 @@ import residentRoute from './routes/residentRoute.js';
 import notificationRoute from './routes/notificationRoute.js';
 import invoiceRoute from './routes/invoiceRoute.js';
 import feedbackRoute from './routes/feedbackRoute.js';
+import managerRoute from './routes/managerRoute.js';
 import cookieParser from 'cookie-parser';
 import cors from "cors";
 import './libs/clearRubbish.js';
@@ -18,7 +19,7 @@ const IP_ADDRESS = process.env.IP_ADDRESS || 'localhost';
 const PORT = process.env.PORT || 8080;
 
 app.use(cors({
-    origin: `http://${IP_ADDRESS}:3000`,
+    origin: [`http://${IP_ADDRESS}:3000`, `http://${IP_ADDRESS}:3001`, 'http://localhost:3000', 'http://localhost:3001'],
     credentials: true,
 }));
 
@@ -36,6 +37,8 @@ app.use('/api/notifications', notificationRoute);
 app.use('/api/invoices', invoiceRoute);
 
 app.use('/api/feedbacks', feedbackRoute);
+
+app.use('/api/manager', managerRoute);
 
 connectDB().then(() => {
     app.listen(PORT, () => {

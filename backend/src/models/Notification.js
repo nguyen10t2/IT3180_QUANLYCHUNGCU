@@ -1,6 +1,34 @@
 import pool from "../libs/db.js";
 
 export const Notification = {
+    async getAll() {
+        const res = await pool.query(
+            `SELECT n.*, u.fullname as created_by_name
+             FROM notifications n
+             LEFT JOIN users u ON n.created_by = u.user_id
+             ORDER BY n.created_at DESC`
+        );
+        return res.rows;
+    },
+
+    async create({ title, content, type, target, target_id, created_by }) {
+        const res = await pool.query(
+            `INSERT INTO notifications (title, content, type, target, target_id, published_at, created_by)
+             VALUES ($1, $2, $3, $4, $5, NOW(), $6)
+             RETURNING *`,
+            [title, content, type || 'info', target || 'all', target_id, created_by]
+        );
+        return res.rows[0];
+    },
+
+    async delete({ notification_id }) {
+        const res = await pool.query(
+            `DELETE FROM notifications WHERE notification_id = $1 RETURNING *`,
+            [notification_id]
+        );
+        return res.rows[0];
+    },
+
     async getNotificationsForUser({ user_id, house_hold_id }) {
         let query = `
             SELECT n.*, 

@@ -1,4 +1,3 @@
-// services/EmailService.js
 import nodemailer from 'nodemailer';
 
 export class EmailService {

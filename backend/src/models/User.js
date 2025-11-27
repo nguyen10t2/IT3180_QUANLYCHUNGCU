@@ -4,10 +4,15 @@ export const User = {
 
     async getUsersByLastCreatedAndLimit({ lastCreated, limit }) {
         const res = await pool.query(
-            `SELECT user_id, email, fullname, role, status, created_at as create_at, updated_at
-            FROM users
-            WHERE created_at > $1
-            ORDER BY user_id
+            `SELECT u.user_id, u.email, u.fullname, u.role, u.status, u.created_at as create_at, u.updated_at,
+                    r.resident_id, r.id_card, r.date_of_birth, r.phone_number, r.gender, r.occupation,
+                    r.role as resident_role, r.status as resident_status,
+                    h.house_hold_id, h.room_number, h.floor
+            FROM users u
+            LEFT JOIN residents r ON u.resident_id = r.resident_id
+            LEFT JOIN house_holds h ON r.house_id = h.house_hold_id
+            WHERE u.created_at > $1 AND u.role = 'resident' AND u.resident_id IS NOT NULL
+            ORDER BY u.user_id
             LIMIT $2`,
             [lastCreated, limit]
         );
@@ -85,12 +90,43 @@ export const User = {
     },
     
     async getPendingUsers() {
+        // Manager chỉ có thể duyệt users có role = resident VÀ đã có thông tin resident
+        const res = await pool.query(
+            `SELECT u.user_id, u.email, u.fullname, u.role, u.status, u.created_at as create_at, u.updated_at,
+                    r.resident_id, r.id_card, r.date_of_birth, r.phone_number, r.gender, r.occupation,
+                    r.role as resident_role, r.status as resident_status,
+                    h.house_hold_id, h.room_number, h.floor
+            FROM users u
+            LEFT JOIN residents r ON u.resident_id = r.resident_id
+            LEFT JOIN house_holds h ON r.house_id = h.house_hold_id
+            WHERE u.status = 'pending' AND u.role = 'resident' AND u.resident_id IS NOT NULL`,
+        );
+        return res.rows;
+    },
+
+    async getPendingUsersWithoutResident() {
+        // Lấy users pending chưa có thông tin resident (chỉ admin mới quản lý được)
         const res = await pool.query(
             `SELECT user_id, email, fullname, role, status, created_at as create_at, updated_at
             FROM users
-            WHERE status = 'pending'`,
+            WHERE status = 'pending' AND role = 'resident' AND resident_id IS NULL`,
         );
         return res.rows;
+    },
+
+    async getUserWithResident({ user_id }) {
+        const res = await pool.query(
+            `SELECT u.user_id, u.email, u.fullname, u.role, u.status, u.created_at as create_at, u.updated_at,
+                    r.resident_id, r.id_card, r.date_of_birth, r.phone_number, r.gender, r.occupation,
+                    r.role as resident_role, r.status as resident_status,
+                    h.house_hold_id, h.room_number, h.floor
+            FROM users u
+            LEFT JOIN residents r ON u.resident_id = r.resident_id
+            LEFT JOIN house_holds h ON r.house_id = h.house_hold_id
+            WHERE u.user_id = $1`,
+            [user_id]
+        );
+        return res.rows[0];
     },
 
     async approveUser({ user_id, approved_by }) {

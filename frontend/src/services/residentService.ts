@@ -24,7 +24,8 @@ export interface HouseHold {
   room_type: string;
   floor: number;
   area: number;
-  house_hold_head: string;
+  head_resident_id: string | null;
+  head_fullname?: string;
 }
 
 export interface UpdateResidentData {

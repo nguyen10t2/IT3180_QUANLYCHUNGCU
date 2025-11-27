@@ -12,7 +12,14 @@ export default function SignInPage() {
   const handleSubmit = async (data: SignInFormValues) => {
     try {
       await signIn(data.email, data.password);
-      router.push("/home");
+      
+      // Redirect based on user role
+      const user = useAuthStore.getState().user;
+      if (user?.role === "admin" || user?.role === "manager") {
+        router.push("/manager/dashboard");
+      } else {
+        router.push("/resident/home");
+      }
     } catch {
       // Error is handled in the store with toast
     }
