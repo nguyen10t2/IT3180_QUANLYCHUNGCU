@@ -207,6 +207,17 @@ export const deleteHouseHold = async (req, res) => {
     }
 }
 
+export const getHouseHoldMembers = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const members = await Resident.getByHouseId({ house_id: id });
+        return res.status(200).json({ members });
+    } catch (error) {
+        console.error("Lỗi khi gọi getHouseHoldMembers", error);
+        return res.status(500).json({ message: "Lỗi hệ thống" });
+    }
+}
+
 // ============ RESIDENTS ============
 export const getResidents = async (req, res) => {
     try {

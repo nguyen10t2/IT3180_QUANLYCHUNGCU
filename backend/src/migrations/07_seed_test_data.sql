@@ -6,13 +6,12 @@
 
 -- =============================================
 -- 1. TÀI KHOẢN ADMIN & MANAGER
--- Password mặc định: Test@123 (cần hash lại bằng argon2)
 -- =============================================
 INSERT INTO users (user_id, email, password_hash, fullname, role, status, verified)
 VALUES 
-    ('a0000000-0000-0000-0000-000000000001', 'admin@kogu.vn', '$argon2id$v=19$m=65536,t=3,p=4$salt$hash', 'Admin Kogu', 'admin', 'active', TRUE),
-    ('a0000000-0000-0000-0000-000000000002', 'manager@kogu.vn', '$argon2id$v=19$m=65536,t=3,p=4$salt$hash', 'Quản Lý Kogu', 'manager', 'active', TRUE),
-    ('a0000000-0000-0000-0000-000000000003', 'accountant@kogu.vn', '$argon2id$v=19$m=65536,t=3,p=4$salt$hash', 'Kế Toán Kogu', 'accountant', 'active', TRUE)
+    ('a0000000-0000-0000-0000-000000000001', 'admin@kogu.vn', '$argon2id$v=19$m=65536,t=3,p=4$gEAayhU8JFMuCdWrHdBtmQ$KJ5yfJLGcvzlDjLusiKP8atkkvA2Ot6szG3WiY3aayQ', 'Admin Kogu', 'admin', 'active', TRUE),
+    ('a0000000-0000-0000-0000-000000000002', 'manager@kogu.vn', '$argon2id$v=19$m=65536,t=3,p=4$gEAayhU8JFMuCdWrHdBtmQ$KJ5yfJLGcvzlDjLusiKP8atkkvA2Ot6szG3WiY3aayQ', 'Quản Lý Kogu', 'manager', 'active', TRUE),
+    ('a0000000-0000-0000-0000-000000000003', 'accountant@kogu.vn', '$argon2id$v=19$m=65536,t=3,p=4$gEAayhU8JFMuCdWrHdBtmQ$KJ5yfJLGcvzlDjLusiKP8atkkvA2Ot6szG3WiY3aayQ', 'Kế Toán Kogu', 'accountant', 'active', TRUE)
 ON CONFLICT (email) DO NOTHING;
 
 -- =============================================
@@ -80,9 +79,9 @@ UPDATE house_holds SET head_resident_id = 'c0000000-0000-0000-0000-000000000013'
 -- =============================================
 INSERT INTO users (user_id, email, password_hash, fullname, role, status, verified, resident_id)
 VALUES 
-    ('d0000000-0000-0000-0000-000000000001', 'nguyenvanan@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$salt$hash', 'Nguyễn Văn An', 'resident', 'active', TRUE, 'c0000000-0000-0000-0000-000000000001'),
-    ('d0000000-0000-0000-0000-000000000002', 'tranthibinh@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$salt$hash', 'Trần Thị Bình', 'resident', 'active', TRUE, 'c0000000-0000-0000-0000-000000000003'),
-    ('d0000000-0000-0000-0000-000000000003', 'levancuong@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$salt$hash', 'Lê Văn Cường', 'resident', 'active', TRUE, 'c0000000-0000-0000-0000-000000000004')
+    ('d0000000-0000-0000-0000-000000000001', 'nguyenvanan@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$gEAayhU8JFMuCdWrHdBtmQ$KJ5yfJLGcvzlDjLusiKP8atkkvA2Ot6szG3WiY3aayQ', 'Nguyễn Văn An', 'resident', 'active', TRUE, 'c0000000-0000-0000-0000-000000000001'),
+    ('d0000000-0000-0000-0000-000000000002', 'tranthibinh@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$gEAayhU8JFMuCdWrHdBtmQ$KJ5yfJLGcvzlDjLusiKP8atkkvA2Ot6szG3WiY3aayQ', 'Trần Thị Bình', 'resident', 'active', TRUE, 'c0000000-0000-0000-0000-000000000003'),
+    ('d0000000-0000-0000-0000-000000000003', 'levancuong@gmail.com', '$argon2id$v=19$m=65536,t=3,p=4$gEAayhU8JFMuCdWrHdBtmQ$KJ5yfJLGcvzlDjLusiKP8atkkvA2Ot6szG3WiY3aayQ', 'Lê Văn Cường', 'resident', 'active', TRUE, 'c0000000-0000-0000-0000-000000000004')
 ON CONFLICT (email) DO NOTHING;
 
 -- =============================================
@@ -90,9 +89,9 @@ ON CONFLICT (email) DO NOTHING;
 -- =============================================
 INSERT INTO users (user_id, email, password_hash, fullname, role, status, verified, resident_id)
 VALUES 
-    ('d0000000-0000-0000-0000-000000000004', 'pending1@test.com', '$argon2id$v=19$m=65536,t=3,p=4$salt$hash', 'Phạm Thị Dung', 'resident', 'pending', TRUE, 'c0000000-0000-0000-0000-000000000005'),
-    ('d0000000-0000-0000-0000-000000000005', 'pending2@test.com', '$argon2id$v=19$m=65536,t=3,p=4$salt$hash', 'Võ Văn Hoàng', 'resident', 'pending', TRUE, 'c0000000-0000-0000-0000-000000000007'),
-    ('d0000000-0000-0000-0000-000000000006', 'pending3@test.com', '$argon2id$v=19$m=65536,t=3,p=4$salt$hash', 'Hoàng Văn Em', 'resident', 'pending', TRUE, 'c0000000-0000-0000-0000-000000000011')
+    ('d0000000-0000-0000-0000-000000000004', 'pending1@test.com', '$argon2id$v=19$m=65536,t=3,p=4$gEAayhU8JFMuCdWrHdBtmQ$KJ5yfJLGcvzlDjLusiKP8atkkvA2Ot6szG3WiY3aayQ', 'Phạm Thị Dung', 'resident', 'pending', TRUE, 'c0000000-0000-0000-0000-000000000005'),
+    ('d0000000-0000-0000-0000-000000000005', 'pending2@test.com', '$argon2id$v=19$m=65536,t=3,p=4$gEAayhU8JFMuCdWrHdBtmQ$KJ5yfJLGcvzlDjLusiKP8atkkvA2Ot6szG3WiY3aayQ', 'Võ Văn Hoàng', 'resident', 'pending', TRUE, 'c0000000-0000-0000-0000-000000000007'),
+    ('d0000000-0000-0000-0000-000000000006', 'pending3@test.com', '$argon2id$v=19$m=65536,t=3,p=4$gEAayhU8JFMuCdWrHdBtmQ$KJ5yfJLGcvzlDjLusiKP8atkkvA2Ot6szG3WiY3aayQ', 'Hoàng Văn Em', 'resident', 'pending', TRUE, 'c0000000-0000-0000-0000-000000000011')
 ON CONFLICT (email) DO NOTHING;
 
 -- =============================================
@@ -121,11 +120,11 @@ ON CONFLICT (invoice_number) DO NOTHING;
 -- =============================================
 INSERT INTO notifications (notification_id, title, content, type, target, is_pinned, created_by)
 VALUES
-    ('f0000000-0000-0000-0000-000000000001', 'Thông báo bảo trì thang máy', 'Thang máy tòa A sẽ được bảo trì vào ngày 01/12/2025 từ 8h-12h. Cư dân vui lòng sử dụng thang máy tòa B trong thời gian này.', 'warning', 'all', TRUE, 'a0000000-0000-0000-0000-000000000002'),
-    ('f0000000-0000-0000-0000-000000000002', 'Nhắc nhở thanh toán phí tháng 11', 'Kính gửi quý cư dân, phí quản lý tháng 11/2025 đã được phát hành. Vui lòng thanh toán trước ngày 15/12/2025 để tránh phát sinh phí trễ hạn.', 'info', 'all', FALSE, 'a0000000-0000-0000-0000-000000000002'),
-    ('f0000000-0000-0000-0000-000000000003', 'Lễ hội Giáng Sinh 2025', 'Chung cư Kogu Express tổ chức lễ hội Giáng Sinh vào ngày 24/12/2025 lúc 18h tại sảnh tầng 1. Mời tất cả cư dân tham gia cùng nhiều hoạt động vui nhộn và quà tặng hấp dẫn!', 'success', 'all', FALSE, 'a0000000-0000-0000-0000-000000000002'),
-    ('f0000000-0000-0000-0000-000000000004', 'Cảnh báo: Kiểm tra PCCC định kỳ', 'Lực lượng PCCC sẽ kiểm tra định kỳ vào ngày 05/12/2025. Cư dân vui lòng đảm bảo lối thoát hiểm thông thoáng và không để vật cản trước cửa phòng.', 'urgent', 'all', TRUE, 'a0000000-0000-0000-0000-000000000002'),
-    ('f0000000-0000-0000-0000-000000000005', 'Cập nhật giờ hoạt động phòng gym', 'Từ ngày 01/12/2025, phòng gym sẽ hoạt động từ 5h30 - 22h00 hàng ngày (kể cả cuối tuần và ngày lễ).', 'info', 'all', FALSE, 'a0000000-0000-0000-0000-000000000002')
+    ('f0000000-0000-0000-0000-000000000001', 'Thông báo bảo trì thang máy', 'Thang máy tòa A sẽ được bảo trì vào ngày 01/12/2025 từ 8h-12h. Cư dân vui lòng sử dụng thang máy tòa B trong thời gian này.', 'general', 'all', TRUE, 'a0000000-0000-0000-0000-000000000002'),
+    ('f0000000-0000-0000-0000-000000000002', 'Nhắc nhở thanh toán phí tháng 11', 'Kính gửi quý cư dân, phí quản lý tháng 11/2025 đã được phát hành. Vui lòng thanh toán trước ngày 15/12/2025 để tránh phát sinh phí trễ hạn.', 'payment', 'all', FALSE, 'a0000000-0000-0000-0000-000000000002'),
+    ('f0000000-0000-0000-0000-000000000003', 'Lễ hội Giáng Sinh 2025', 'Chung cư Kogu Express tổ chức lễ hội Giáng Sinh vào ngày 24/12/2025 lúc 18h tại sảnh tầng 1. Mời tất cả cư dân tham gia cùng nhiều hoạt động vui nhộn và quà tặng hấp dẫn!', 'event', 'all', FALSE, 'a0000000-0000-0000-0000-000000000002'),
+    ('f0000000-0000-0000-0000-000000000004', 'Cảnh báo: Kiểm tra PCCC định kỳ', 'Lực lượng PCCC sẽ kiểm tra định kỳ vào ngày 05/12/2025. Cư dân vui lòng đảm bảo lối thoát hiểm thông thoáng và không để vật cản trước cửa phòng.', 'general', 'all', TRUE, 'a0000000-0000-0000-0000-000000000002'),
+    ('f0000000-0000-0000-0000-000000000005', 'Cập nhật giờ hoạt động phòng gym', 'Từ ngày 01/12/2025, phòng gym sẽ hoạt động từ 5h30 - 22h00 hàng ngày (kể cả cuối tuần và ngày lễ).', 'general', 'all', FALSE, 'a0000000-0000-0000-0000-000000000002')
 ON CONFLICT DO NOTHING;
 
 -- =============================================

@@ -11,6 +11,7 @@ import {
     getHouseHoldById,
     updateHouseHold,
     deleteHouseHold,
+    getHouseHoldMembers,
     getResidents,
     getResidentById,
     updateResident,
@@ -55,6 +56,8 @@ router.get('/households/:id', getHouseHoldById);
 router.patch('/households/:id', updateHouseHold);
 
 router.delete('/households/:id', deleteHouseHold);
+
+router.get('/households/:id/members', getHouseHoldMembers);
 
 // === Resident Management ===
 router.get('/residents', getResidents);

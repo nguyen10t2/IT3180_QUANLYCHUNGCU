@@ -15,7 +15,6 @@ export const HouseHold = {
     },
 
     async create({ room_number, room_type, head_resident_id, floor, area, notes }) {
-        // Lấy tên chủ hộ từ resident để lưu vào house_hold_head (legacy support)
         let house_hold_head = null;
         if (head_resident_id) {
             const residentRes = await pool.query(
@@ -48,7 +47,6 @@ export const HouseHold = {
     },
 
     async update({ house_hold_id, data }) {
-        // Nếu đổi head_resident_id, cập nhật luôn house_hold_head (legacy)
         if (data.head_resident_id) {
             const residentRes = await pool.query(
                 `SELECT fullname FROM residents WHERE resident_id = $1`,

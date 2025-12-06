@@ -33,7 +33,7 @@ CREATE TYPE payment_method AS ENUM ('cash', 'bank_transfer', 'momo', 'vnpay', 'z
 -- =============================================
 -- NOTIFICATION ENUMS
 -- =============================================
-CREATE TYPE notification_type AS ENUM ('info', 'warning', 'success', 'urgent');
+CREATE TYPE notification_type AS ENUM ('general',  'emergency', 'maintenance', 'event',  'payment');
 CREATE TYPE notification_target AS ENUM ('all', 'household', 'individual');
 
 -- =============================================

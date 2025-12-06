@@ -52,6 +52,14 @@ export const Resident = {
         return res.rows[0].exists;
     },
 
+    async getByHouseId({ house_id }) {
+        const res = await pool.query(
+            `SELECT * FROM residents WHERE house_id = $1 ORDER BY fullname ASC`,
+            [house_id]
+        );
+        return res.rows;
+    },
+
     async findOne({phone_number}) {
         const res = await pool.query(
             `SELECT * FROM residents

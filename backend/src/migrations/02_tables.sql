@@ -224,7 +224,7 @@ CREATE TABLE notifications (
     notification_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
-    type notification_type DEFAULT 'info',
+    type notification_type DEFAULT 'general',
     target notification_target DEFAULT 'all',
     target_id UUID,
     is_pinned BOOLEAN DEFAULT FALSE,
