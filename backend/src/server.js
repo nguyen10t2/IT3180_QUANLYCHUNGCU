@@ -8,6 +8,7 @@ import notificationRoute from './routes/notificationRoute.js';
 import invoiceRoute from './routes/invoiceRoute.js';
 import feedbackRoute from './routes/feedbackRoute.js';
 import managerRoute from './routes/managerRoute.js';
+import accountantRoute from './routes/accountantRoute.js';
 import cookieParser from 'cookie-parser';
 import cors from "cors";
 import './libs/clearRubbish.js';
@@ -39,6 +40,8 @@ app.use('/api/invoices', invoiceRoute);
 app.use('/api/feedbacks', feedbackRoute);
 
 app.use('/api/manager', managerRoute);
+
+app.use('/api/accountant', accountantRoute);
 
 connectDB().then(() => {
     app.listen(PORT, () => {

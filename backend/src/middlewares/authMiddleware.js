@@ -1,13 +1,15 @@
 import jwt from 'jsonwebtoken';
 import { Session } from '../models/Session.js';
 
+const ROLE_HIERARCHY = {
+    admin: ['admin', 'manager', 'accountant', 'resident'],
+    manager: ['manager', 'resident'],
+    accountant: ['accountant'],
+    resident: ['resident']
+};
+
 const hasPermission = (user_role, required_role) => {
-    return {
-        admin: ['admin', 'manager', 'accountant', 'resident'],
-        manager: ['manager', 'resident'],
-        accountant: ['accountant'],
-        resident: ['resident']
-    }[user_role]?.includes(required_role) || false;
+    return ROLE_HIERARCHY[user_role]?.includes(required_role) || false;
 };
 
 export const verifyJWT = async (req, res, next) => {
