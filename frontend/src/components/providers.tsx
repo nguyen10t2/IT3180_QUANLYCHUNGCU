@@ -9,9 +9,6 @@ interface ProvidersProps {
 }
 
 export function Providers({ children }: ProvidersProps) {
-  useEffect(() => {
-    useAuthStore.persist.rehydrate();
-  }, []);
 
   return (
     <NextThemesProvider

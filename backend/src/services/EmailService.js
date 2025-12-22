@@ -30,7 +30,7 @@ export class EmailService {
             subject: 'Mã OTP',
             text: `Mã OTP của bạn: ${otp}`,
             html: htmlBody,
-        };
+        };  
 
         try {
             await this.transporter.sendMail(mailOptions);
